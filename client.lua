@@ -27,14 +27,18 @@ debug.draw = 15
 debug.posx = X/4
 debug.posy = Y-debug.draw*15
 
+debug.fadetime = 10*1000
+debug.fadealpha = 150
+
 debug.colors = {
-  error = tocolor(255,0,0,255),
-  warning = tocolor(255,255,0,255),
-  info = tocolor(0,255,0,255),
-  custom = tocolor(255,255,255,255),
+  error = {255,0,0,255},
+  warning = {255,255,0,255},
+  info = {0,255,0,255},
+  custom = {255,255,255,255},
   
-  amount = tocolor(100,0,255,255),
+  amount = {100,0,255,255},
 }
+
 
 
 function debug.output(message,level)
@@ -48,6 +52,7 @@ function debug.output(message,level)
   end
   if type(exists) == "number" then
     debug.lines[exists].amount = debug.lines[exists].amount + 1
+    debug.lines[exists].time = getTickCount()
   else
     local type = "error"
     if level == 0 then
@@ -57,7 +62,7 @@ function debug.output(message,level)
     elseif level == 3 then
       type = "info"
     end
-    table.insert(debug.lines,{ message = message, amount = 1, type = type, level = level })
+    table.insert(debug.lines,{ message = message, amount = 1, type = type, level = level, time = getTickCount() })
     if #debug.lines > debug.draw then
       table.remove(debug.lines,1)
     end
@@ -95,14 +100,18 @@ function debug.render()
       local message = info.message
       local amount = info.amount
       local type = info.type
+      local passed = getTickCount() - info.time
       
       local text = message
       
-      local color = debug.colors[type] or tocolor(255,255,255,150)
+      local color = debug.colors[type] or {255,255,255,255}
+      if passed > debug.fadetime then
+	color[4] = debug.fadealpha
+      end
+      color = tocolor(unpack(color))
       
       if amount > 1 then
-	local acolor = color -- change to debug.colors.amount
-	dxDrawText(amount,debug.posx-5,debug.posy+15*(i-1),debug.posx-5,15,acolor,1,"default-bold","right","top")
+	dxDrawText(amount,debug.posx-5,debug.posy+15*(i-1),debug.posx-5,15,tocolor(unpack(debug.colors.amount)),1,"default-bold","right","top")
       end
       
       dxDrawText(text,debug.posx,debug.posy+15*(i-1),X,15,color,1,"default-bold","left","top")
