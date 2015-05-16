@@ -80,11 +80,10 @@ addCommandHandler("debug",debug.commandhandler,true)
 
 
 function debug.transferdata(message,level,file,line)
-  local msg = tostring(file)..":"..tostring(line)..": "..tostring(message)
   for v,k in pairs(debug.players) do
     while true do
       if not k or not isElement(v) then break end
-      triggerClientEvent(v,"debug.request.output",v,msg,level)
+      triggerClientEvent(v,"debug.request.output",v,message,level,file,line)
       break
     end
   end

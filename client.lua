@@ -19,7 +19,7 @@ debug.colors = {
   amount = tocolor(100,0,255,255),
 }
 
-addEvent("debug.request.output",true)
+
 function debug.output(message,level)
   --outputConsole(message)
   local exists = false
@@ -46,7 +46,7 @@ function debug.output(message,level)
     end
   end
 end
-addEventHandler("debug.request.output",LOCALPLAYER,debug.output)
+
 
 addEvent("debug.request.enable",true)
 addEvent("debug.request.disable",true)
@@ -63,10 +63,12 @@ function debug.disable()
 end
 addEventHandler("debug.request.disable",LOCALPLAYER,debug.disable)
 
+addEvent("debug.request.output",true)
 function debug.parse(message,level,file,line)
   local msg = tostring(file)..":"..tostring(line)..": "..tostring(message)
   debug.output(msg,level)
 end
+addEventHandler("debug.request.output",LOCALPLAYER,debug.parse)
 
 function debug.render()
   for i=1,debug.draw do
