@@ -11,5 +11,4 @@ I made it in order to see the amount of errors and warnings instead of seeing th
 
 # TODO List
 1. Add unique interface for errors and warnings
-2. Fix errors handling when file name is not specified by the resource
-3. Fix many other things which I don't like at the moment
+2. Fix many other things which I don't like at the moment
