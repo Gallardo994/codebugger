@@ -65,7 +65,7 @@ addEventHandler("debug.request.disable",LOCALPLAYER,debug.disable)
 
 addEvent("debug.request.output",true)
 function debug.parse(message,level,file,line)
-  local msg = tostring(file)..":"..tostring(line)..": "..tostring(message)
+  local msg = (file and tostring(file) or "UNDEFINED")..":"..tostring(line)..": "..tostring(message)
   debug.output(msg,level)
 end
 addEventHandler("debug.request.output",LOCALPLAYER,debug.parse)
