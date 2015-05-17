@@ -95,7 +95,6 @@ function debug.commandhandler(player)
 end
 addCommandHandler("debug",debug.commandhandler,true)
 
-
 function debug.transferdata(message,level,file,line)
   for v,k in pairs(debug.players) do
     while true do
@@ -110,5 +109,3 @@ function debug.playerleave()
   debug.disable(source)
 end
 addEventHandler("onPlayerQuit",ROOTELEMENT,debug.playerleave)
-
-
