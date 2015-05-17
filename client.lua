@@ -27,14 +27,15 @@ debug.draw = 15
 debug.posx = X/4
 debug.posy = Y-debug.draw*15
 
-debug.fadetime = 10*1000
-debug.fadealpha = 150
+debug.fadetime = 15*1000
+debug.normalalpha = 255
+debug.fadealpha = 100
 
 debug.colors = {
-  error = {255,0,0,255},
-  warning = {255,255,0,255},
-  info = {0,255,0,255},
-  custom = {255,255,255,255},
+  error = {255,0,0},
+  warning = {255,255,0},
+  info = {0,255,0},
+  custom = {255,255,255},
   
   amount = {100,0,255,255},
 }
@@ -104,11 +105,15 @@ function debug.render()
       
       local text = message
       
-      local color = debug.colors[type] or {255,255,255,255}
-      if passed > debug.fadetime then
+      local color = debug.colors[type] or {255,255,255}
+      if passed >= debug.fadetime then
 	color[4] = debug.fadealpha
+      else
+	color[4] = debug.normalalpha
       end
       color = tocolor(unpack(color))
+      
+      -- Damn addressed tables, gotta restore the data then
       
       if amount > 1 then
 	dxDrawText(amount,debug.posx-5,debug.posy+15*(i-1),debug.posx-5,15,tocolor(unpack(debug.colors.amount)),1,"default-bold","right","top")
