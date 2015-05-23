@@ -24,12 +24,13 @@ local X,Y = guiGetScreenSize()
 debug = { }
 debug.lines = { }
 debug.draw = 15
-debug.posx = X/4
-debug.posy = Y-debug.draw*15
+debug.posx = 0 --X/4
+debug.posy = Y/2-debug.draw*15/2 --Y-debug.draw*15
 
 debug.fadetime = 15*1000
 debug.normalalpha = 255
-debug.fadealpha = 100
+debug.fadealpha = 70
+debug.alphakey = "F1"
 
 debug.colors = {
   error = {255,0,0},
@@ -76,12 +77,16 @@ addEvent("debug.request.disable",true)
 function debug.enable()
   addEventHandler("onClientDebugMessage",ROOTELEMENT,debug.parse)
   addEventHandler("onClientRender",ROOTELEMENT,debug.render,true,"low-10")
+  debug.forcemaxalpha = nil
+  bindKey(debug.alphakey,"both",debug.changestate)
 end
 addEventHandler("debug.request.enable",LOCALPLAYER,debug.enable)
 
 function debug.disable()
   removeEventHandler("onClientDebugMessage",ROOTELEMENT,debug.parse)
   removeEventHandler("onClientRender",ROOTELEMENT,debug.render,true,"low-10")
+  debug.forcemaxalpha = nil
+  unbindKey(debug.alphakey,"both",debug.changestate)
 end
 addEventHandler("debug.request.disable",LOCALPLAYER,debug.disable)
 
@@ -106,7 +111,7 @@ function debug.render()
       local text = message
       
       local color = debug.colors[type] or {255,255,255}
-      if passed >= debug.fadetime then
+      if passed >= debug.fadetime and not debug.forcemaxalpha then
 	color[4] = debug.fadealpha
       else
 	color[4] = debug.normalalpha
@@ -125,4 +130,9 @@ function debug.render()
     
     
   end
+end
+
+
+function debug.changestate(key,state)
+  debug.forcemaxalpha = (state == "down") and true or false
 end
