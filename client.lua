@@ -255,6 +255,7 @@ debug.exclude = {
   ['dxDrawText'] = true,
   ['dxDrawImage'] = true,
   ['dxDrawRectangle'] = true,
+  ['dxDrawImageSection'] = true,
   ['tocolor'] = true,
   ['getResourceRootElement'] = true,
   ['getRootElement'] = true,
@@ -262,8 +263,8 @@ debug.exclude = {
   ['getThisResource'] = true,
   ['getTickCount'] = true,
 }
-for i,v in ipairs(_G) do
+for i,v in pairs(_G) do
   if not debug.exclude[i] and type(v) == "function" then
-    table.insert(debug.functionlist,v)
+    table.insert(debug.functionlist,i)
   end
 end
