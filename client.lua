@@ -36,6 +36,8 @@ debug.alphakey = "F1"
 debug.paused = false
 debug.pausekey = "F2"
 
+debug.welcome = true -- Remove to disable the welcome message
+
 debug.colors = {
   error = {255,0,0},
   warning = {255,255,0},
@@ -84,20 +86,19 @@ addEvent("debug.request.enable",true)
 function debug.enable()
   addEventHandler("onClientDebugMessage",ROOTELEMENT,debug.parse)
   addEventHandler("onClientRender",ROOTELEMENT,debug.render,true,"low-10")
-  --addDebugHook("preEvent",debug.eventhook)
-  --addDebugHook("preFunction",debug.functionhook,debug.functionlist)
   debug.forcemaxalpha = nil
   bindKey(debug.alphakey,"both",debug.changestate)
   bindKey(debug.pausekey,"up",debug.changestatepaused)
   debug.active = true
-  
-  outputChatBox("Hello and welcome to Codebugger by #ER|Gallardo",0,255,0)
-  outputChatBox("Commands: ",255,255,0)
-  outputChatBox("* /debug - #ffffffOpen the debug line",0,255,0,true)
-  outputChatBox("* /debugmode <resource name> <function/event> - #ffffffAdd debug hook to a resource",0,255,0,true)
-  outputChatBox("Controls: ",255,255,0)
-  outputChatBox("* "..debug.alphakey.." - #ffffffShow faded lines",0,255,0,true)
-  outputChatBox("* "..debug.pausekey.." - #ffffffPause the debug line",0,255,0,true)
+  if debug.welcome then
+    outputChatBox("Hello and welcome to Codebugger by #ER|Gallardo",0,255,0)
+    outputChatBox("Commands: ",255,255,0)
+    outputChatBox("* /debug - #ffffffOpen the debug line",0,255,0,true)
+    outputChatBox("* /debugmode <resource name> <function/event> - #ffffffAdd debug hook to a resource",0,255,0,true)
+    outputChatBox("Controls: ",255,255,0)
+    outputChatBox("* "..debug.alphakey.." - #ffffffShow faded lines",0,255,0,true)
+    outputChatBox("* "..debug.pausekey.." - #ffffffPause the debug line",0,255,0,true)
+  end
 end
 addEventHandler("debug.request.enable",LOCALPLAYER,debug.enable)
 
@@ -152,6 +153,7 @@ function debug.setmode(cmdname,...)
 end
 addCommandHandler("debugmode",debug.setmode)
 
+-- Responsible for handling event hook
 function debug.eventhook(resource,event,eventsource,eventclient,file,line,...)
   if debug.paused then return end -- Debug line is paused?
   if getResourceRootElement(resource) == resourceRoot then return end -- This resource? Hell no
@@ -165,6 +167,7 @@ function debug.eventhook(resource,event,eventsource,eventclient,file,line,...)
   debug.output(resource.." ("..file..":"..line.."): source: "..eventsource..", client: "..eventclient..", args: "..args,4)
 end
 
+-- Responsible for handling function hook
 function debug.functionhook(resource,functionname,isallowedbyacl,file,line,...)
   if debug.paused then return end -- Debug line is paused?
   if debug.resource and not (debug.resource == resource) then return end -- This resource? Hell no
@@ -217,6 +220,7 @@ function debug.changestatepaused(key,state)
   outputChatBox("Debug mode pause state: "..tostring(debug.paused),unpack(color))
 end
 
+-- Concat with transforming values to strings
 function table.reconcat(t,s)
   if #t <= 0 then
     return ""
@@ -230,6 +234,7 @@ function table.reconcat(t,s)
   return table.concat(nt,s)
 end
 
+-- Clone table function
 function table.clone(orig)
   local orig_type = type(orig)
   local copy
@@ -244,6 +249,7 @@ function table.clone(orig)
   return copy
 end
 
+-- Functions for debug hook (exclude most used and most unwanted ones)
 debug.functionlist = {}
 debug.exclude = {
   ['dxDrawText'] = true,
@@ -251,6 +257,10 @@ debug.exclude = {
   ['dxDrawRectangle'] = true,
   ['tocolor'] = true,
   ['getResourceRootElement'] = true,
+  ['getRootElement'] = true,
+  ['getLocalPlayer'] = true,
+  ['getThisResource'] = true,
+  ['getTickCount'] = true,
 }
 for i,v in ipairs(_G) do
   if not debug.exclude[i] and type(v) == "function" then
