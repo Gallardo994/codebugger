@@ -37,6 +37,7 @@ debug.paused = false
 debug.pausekey = "F2"
 
 debug.welcome = true -- Remove to disable the welcome message
+debug.hookcommand = "debugmode" -- Change debug hook mode
 
 debug.colors = {
   error = {255,0,0},
@@ -94,7 +95,7 @@ function debug.enable()
     outputChatBox("Hello and welcome to Codebugger by #ER|Gallardo",0,255,0)
     outputChatBox("Commands: ",255,255,0)
     outputChatBox("* /debug - #ffffffOpen the debug line",0,255,0,true)
-    outputChatBox("* /debugmode <resource name> <function/event> - #ffffffAdd debug hook to a resource",0,255,0,true)
+    outputChatBox("* /"..debug.hookcommand.." <resource name> <function/event> - #ffffffAdd debug hook to a resource",0,255,0,true)
     outputChatBox("Controls: ",255,255,0)
     outputChatBox("* "..debug.alphakey.." - #ffffffShow faded lines",0,255,0,true)
     outputChatBox("* "..debug.pausekey.." - #ffffffPause the debug line",0,255,0,true)
@@ -151,7 +152,7 @@ function debug.setmode(cmdname,...)
   end
   outputChatBox(hook,0,255,0)
 end
-addCommandHandler("debugmode",debug.setmode)
+addCommandHandler(debug.hookcommand,debug.setmode)
 
 -- Responsible for handling event hook
 function debug.eventhook(resource,event,eventsource,eventclient,file,line,...)
@@ -262,6 +263,7 @@ debug.exclude = {
   ['getLocalPlayer'] = true,
   ['getThisResource'] = true,
   ['getTickCount'] = true,
+  ['outputDebugString'] = true, -- We have it anyway
 }
 for i,v in pairs(_G) do
   if not debug.exclude[i] and type(v) == "function" then
