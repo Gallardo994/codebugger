@@ -140,7 +140,7 @@ function debug.setmode(cmdname,...)
   local resname = args[1]
   if resname == getResourceName(getThisResource()) then return end -- Can't debug this resource as for stack overflow reasons
   local mode = args[2]
-  debug.resource = getResourceFromName(resname) or nil
+  debug.resource = (type(resname) == "string") and getResourceFromName(resname) and resname or nil
   if not debug.resource then return outputChatBox("No such resource found",255,0,0) end
   local hook = "No hook added (function/event only)"
   if mode == "func" or mode == "function" or mode == "f" then
@@ -158,8 +158,8 @@ addCommandHandler(debug.hookcommand,debug.setmode)
 function debug.eventhook(resource,event,eventsource,eventclient,file,line,...)
   if debug.paused then return end -- Debug line is paused?
   if getResourceRootElement(resource) == resourceRoot then return end -- This resource? Hell no
-  if debug.resource and not (debug.resource == resource) then return end -- Wrong resource? Hell no
   local resource = getResourceName(resource) or tostring(resource)
+  if debug.resource and not (debug.resource == resource) then return end -- Wrong resource? Hell no
   local eventsource = isElement(eventsource) and (getElementType(eventsource) == "player" and getPlayerName(eventsource) or getElementType(eventsource)) or tostring(eventsource)
   local eventclient = isElement(eventclient) and getPlayerName(eventclient) or tostring(eventclient)
   local file = tostring(file)
@@ -171,9 +171,9 @@ end
 -- Responsible for handling function hook
 function debug.functionhook(resource,functionname,isallowedbyacl,file,line,...)
   if debug.paused then return end -- Debug line is paused?
-  if debug.resource and not (debug.resource == resource) then return end -- This resource? Hell no
   if getResourceRootElement(resource) == resourceRoot then return end -- Wrong resource? Hell no
   local resource = getResourceName(resource) or tostring(resource)
+  if debug.resource and not (debug.resource == resource) then return end -- This resource? Hell no
   local functionname = tostring(functionname)
   local isallowedbyacl = tostring(isallowedbyacl)
   local file = tostring(file)
